@@ -1,0 +1,12 @@
+﻿# OS metadata
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Scratch and test servers
+scratch/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.class

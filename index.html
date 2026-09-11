@@ -1,0 +1,1404 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="assets/droop.jpeg">
+    <title>Drop - Move Anything, Go Anywhere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/animations.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: white;
+            color: #0f172a;
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        .hero-bg {
+            background-color: #080f1e;
+            background-image: radial-gradient(circle at top right, rgba(37, 99, 235, 0.2) 0%, transparent 60%),
+                radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated hero orbs */
+        .hero-orb-1 {
+            width: 600px;
+            height: 600px;
+            top: -100px;
+            right: -150px;
+            animation-delay: 0s;
+            animation-duration: 14s;
+        }
+
+        .hero-orb-2 {
+            width: 400px;
+            height: 400px;
+            bottom: -50px;
+            left: -100px;
+            animation-delay: 3s;
+            animation-duration: 10s;
+        }
+
+        .abstract-wave {
+            position: absolute;
+            top: 40%;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 400px;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .phone-mockup {
+            position: relative;
+            width: 300px;
+            height: 600px;
+            background: #202a3f;
+            border-radius: 48px;
+            border: 12px solid #334155;
+            box-shadow:
+                0 0 0 2px rgba(255, 255, 255, 0.05),
+                0 30px 60px -15px rgba(0, 0, 0, 0.6),
+                0 0 60px rgba(37, 99, 235, 0.2);
+            overflow: hidden;
+            animation: float 6s ease-in-out infinite;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .phone-mockup:hover {
+            transform: translateY(-16px) scale(1.02);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1), 0 40px 80px -15px rgba(0, 0, 0, 0.7), 0 0 80px rgba(37, 99, 235, 0.35);
+            animation-play-state: paused;
+        }
+
+        .phone-inner {
+            height: 100%;
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 25px;
+            background: #334155;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 20;
+        }
+
+        .map-route-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .phone-ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px 20px 20px;
+        }
+
+        .bottom-card {
+            background: #020617;
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Service bar */
+        .service-bar-container {
+            background: white;
+            margin-top: -30px;
+            position: sticky;
+            top: 88px;
+            z-index: 40;
+            border-top: 1px solid #f1f5f9;
+            box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.06);
+        }
+
+        .service-pill {
+            background: white;
+            border: 1px solid #f1f5f9;
+            color: #64748b;
+            padding: 12px 24px;
+            border-radius: 99px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            white-space: nowrap;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-pill::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 99px;
+        }
+
+        .service-pill:hover::before {
+            opacity: 1;
+        }
+
+        .service-pill:hover {
+            color: #2563eb;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px -4px rgba(37, 99, 235, 0.2);
+            border-color: #dbeafe;
+        }
+
+        .service-pill:hover i {
+            color: #2563eb;
+        }
+
+        .service-pill span,
+        .service-pill i {
+            position: relative;
+            z-index: 1;
+        }
+
+        .service-pill:active {
+            transform: scale(0.96);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 99px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px -5px rgba(37, 99, 235, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            border-radius: 99px;
+        }
+
+        .btn-primary:hover::before {
+            opacity: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px -8px rgba(37, 99, 235, 0.6);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary span,
+        .btn-primary i {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary:hover i {
+            animation: bounce-arrow 0.5s ease infinite;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 99px;
+            font-weight: 700;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .logo-dot {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50% 50% 50% 10%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(-45deg);
+            transition: transform 0.4s ease;
+        }
+
+        .logo-dot:hover {
+            transform: rotate(-45deg) scale(1.15);
+        }
+
+        .logo-dot i {
+            transform: rotate(45deg);
+            color: #080f1e;
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            padding: 32px 24px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #2563eb, #60a5fa);
+            transition: width 0.4s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.12);
+            border-color: rgba(37, 99, 235, 0.15);
+        }
+
+        .stat-card:hover::after {
+            width: 100%;
+        }
+
+        .stat-card .stat-num {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .blue-card-icon {
+            border: 1px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            animation: spin-slow 12s linear infinite;
+        }
+
+        /* Review cards */
+        .review-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .review-card::before {
+            content: '\201C';
+            position: absolute;
+            top: 12px;
+            right: 20px;
+            font-size: 80px;
+            line-height: 1;
+            color: rgba(37, 99, 235, 0.07);
+            font-family: Georgia, serif;
+            pointer-events: none;
+        }
+
+        .review-card:hover {
+            transform: translateY(-8px) scale(1.015);
+            box-shadow: 0 24px 60px -12px rgba(37, 99, 235, 0.15);
+        }
+
+        /* How Drop Works step numbers */
+        .step-circle {
+            position: relative;
+            transition: all 0.35s ease;
+        }
+
+        .step-circle:hover {
+            background: #2563eb !important;
+            color: white;
+            transform: scale(1.12);
+            box-shadow: 0 0 40px rgba(37, 99, 235, 0.5);
+        }
+    </style>
+</head>
+
+<body class="font-['Plus_Jakarta_Sans',sans-serif]">
+
+    <!-- HERO SECTION -->
+    <div class="hero-bg text-white overflow-hidden">
+        <!-- Abstract Curve -->
+        <svg class="abstract-wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="10 10"
+                d="M0,160 C320,300 420,0 720,160 C1020,320 1120,50 1440,160"></path>
+            <path fill="none" stroke="#1d4ed8" stroke-width="1"
+                d="M0,180 C300,320 400,20 700,180 C1000,340 1100,70 1440,180" opacity="0.5"></path>
+        </svg>
+
+        <!-- Navigation -->
+        <nav
+            class="fixed top-0 left-0 right-0 z-50 px-8 py-6 bg-[#080f1e]/90 backdrop-blur-md border-b border-white/10 transition-all duration-300">
+            <div class="max-w-7xl mx-auto flex items-center justify-between relative">
+                <div class="flex items-center gap-3">
+
+                    <img src="assets/drop_logo.png" alt="Drop Logo" class="h-8 w-auto">
+                </div>
+
+                <div class="hidden lg:flex items-center gap-10 text-[15px] font-semibold text-gray-300">
+                    <a class='text-white nav-link' href='index.html'>Home</a>
+                    <a class='hover:text-white transition-colors nav-link' href='about.html'>About Us</a>
+                    <a class='hover:text-white transition-colors nav-link' href='services.html'>Services</a>
+                    <a class='hover:text-white transition-colors nav-link' href='communities.html'>Communities</a>
+                    <a class='hover:text-white transition-colors nav-link' href='investors.html'>Investors</a>
+                    <a class='hover:text-white transition-colors nav-link' href='careers.html'>Careers</a>
+                </div>
+
+                <div class="hidden lg:flex items-center gap-6">
+                    <a href="https://play.google.com/store" target="_blank"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-[15px] font-bold transition-all hover:scale-105 active:scale-95">Get
+                        the App</a>
+                </div>
+
+                <!-- Mobile Menu Toggle -->
+                <button id="mobile-menu-btn"
+                    class="lg:hidden text-white p-2 focus:outline-none hover:bg-white/10 rounded-lg transition-colors">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu Dropdown -->
+            <div id="mobile-menu"
+                class="hidden lg:hidden absolute top-full left-0 w-full bg-[#080f1e] border-b border-white/10 py-4 px-8 flex-col gap-4 shadow-xl">
+                <a class='text-white font-medium text-lg nav-link' href='index.html'>Home</a>
+                <a class='text-gray-300 hover:text-white font-medium text-lg nav-link' href='about.html'>About Us</a>
+                <a class='text-gray-300 hover:text-white font-medium text-lg nav-link' href='services.html'>Services</a>
+                <a class='text-gray-300 hover:text-white font-medium text-lg nav-link'
+                    href='communities.html'>Communities</a>
+                <a class='text-gray-300 hover:text-white font-medium text-lg nav-link'
+                    href='investors.html'>Investors</a>
+                <a class='text-gray-300 hover:text-white font-medium text-lg nav-link'
+                    href='careers.html'>Careers</a>
+                <hr class="border-white/10 my-2">
+                <a href="https://play.google.com/store" target="_blank"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-center font-bold transition-all active:scale-95 mt-2">Get
+                    the App</a>
+            </div>
+        </nav>
+
+        <!-- Animated background orbs -->
+        <div class="orb orb-blue hero-orb-1"></div>
+        <div class="orb orb-indigo hero-orb-2"></div>
+
+        <!-- Hero Content -->
+        <main class="relative z-10 px-8 pt-32 pb-32">
+            <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+
+                <!-- Left Content -->
+                <div class="space-y-8 relative z-20">
+                    <h1
+                        class="text-[64px] lg:text-[76px] font-extrabold leading-[1.05] tracking-tight animate-fade-in-up">
+                        Move Anything.<br>
+                        <span class="text-blue-500">Go Anywhere.</span><br>
+                        Drop Gets It Done.
+                    </h1>
+                    <p class="text-gray-300 text-lg max-w-lg leading-relaxed font-medium animate-fade-in-up delay-200">
+                        Nigeria's most versatile mobility and services platform rides, freight, couriers, artisans and
+                        more.
+                    </p>
+                    <div class="flex flex-wrap gap-4 animate-fade-in-up delay-400">
+                        <a href="https://play.google.com/store" target="_blank" class="btn-primary">
+                            <span>Download the App</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </a>
+                        <a class='btn-secondary' href='services.html'>
+                            Explore Services
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Content (Phone Mockup) -->
+                <div class="flex justify-center lg:justify-end relative z-10">
+                    <img src="assets/drop_figma_1.png" alt="Drop App Mockup"
+                        class="w-full max-w-[500px] lg:max-w-[650px] h-auto object-contain relative z-10 Drop-shadow-[0_30px_60px_rgba(37,99,235,0.25)] hover:Drop-shadow-[0_40px_80px_rgba(37,99,235,0.4)] transition-all duration-500"
+                        style="animation: float 6s ease-in-out infinite;">
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- SERVICES BAR (Floating) -->
+    <div class="service-bar-container py-4">
+        <div class="max-w-7xl mx-auto px-8 flex flex-wrap gap-4 justify-center">
+            <button class="service-pill" style="color: #2563eb; background: #eff6ff; border-color: #dbeafe;"
+                onclick="window.location.href='services.html#instant-rides'">
+                <i data-lucide="car" class="w-4 h-4 text-blue-600"></i>
+                <span class="text-blue-600 font-bold">Instant Rides</span>
+            </button>
+            <button class="service-pill" onclick="window.location.href='services.html#courier-service'">
+                <i data-lucide="package" class="w-4 h-4"></i>
+                <span>Courier</span>
+            </button>
+            <button class="service-pill" onclick="window.location.href='services.html#hire-a-driver'">
+                <i data-lucide="user" class="w-4 h-4"></i>
+                <span>Hire a Driver</span>
+            </button>
+            <button class="service-pill" onclick="window.location.href='services.html#rent-a-car'">
+                <i data-lucide="key" class="w-4 h-4"></i>
+                <span>Rent a Car</span>
+            </button>
+            <button class="service-pill" onclick="window.location.href='services.html#book-freight'">
+                <i data-lucide="truck" class="w-4 h-4"></i>
+                <span>Book Freight</span>
+            </button>
+            <button class="service-pill" onclick="window.location.href='services.html#hire-artisan'">
+                <i data-lucide="hammer" class="w-4 h-4"></i>
+                <span>Hire an Artisan</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- STATS SECTION -->
+    <section class="max-w-5xl mx-auto px-8 py-20 bg-white">
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="stat-card reveal">
+                <div class="text-[32px] font-extrabold stat-num mb-1" data-count="500" data-suffix="K+">500K+</div>
+                <div class="text-gray-500 font-medium text-sm">Rides Completed</div>
+            </div>
+            <div class="stat-card reveal delay-200">
+                <div class="text-[32px] font-extrabold stat-num mb-1">6 Core</div>
+                <div class="text-gray-500 font-medium text-sm">Services Available</div>
+            </div>
+            <div class="stat-card reveal delay-400">
+                <div class="text-[32px] font-extrabold stat-num mb-1" data-count="8" data-suffix="+">8+</div>
+                <div class="text-gray-500 font-medium text-sm">Community Programs</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES / ABOUT SECTION -->
+    <section class="max-w-7xl mx-auto px-8 py-10 pb-16 bg-white">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+            <!-- Left Text -->
+            <div class="space-y-6">
+                <h2 class="text-4xl lg:text-[44px] font-extrabold leading-tight tracking-tight text-[#0f172a]">
+                    One platform.<br>
+                    Endless possibilities.
+                </h2>
+                <p class="text-gray-500 text-[15px] leading-relaxed max-w-md font-medium">
+                    We're more than just a ride-hailing app. Drop is a comprehensive
+                    ecosystem designed to empower Nigerians, connecting you to verified
+                    services, reliable transport, and skilled professionalsâ€”all in one seamless
+                    experience.
+                </p>
+                <a class='inline-flex items-center gap-2 text-blue-600 font-bold hover:underline transition-all'
+                    href='about.html'>
+                    <span>Learn more about our mission</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            <!-- Right Grid of Images -->
+            <div class="grid grid-cols-2 gap-4 h-[400px] relative z-20 lg:-mb-24 lg:-mt-16">
+                <!-- Left Column (Tall Image) -->
+                <div class="h-full">
+                    <img src="assets/woman_car.png" alt="Smiling woman in car"
+                        class="w-full h-full object-cover rounded-2xl shadow-sm">
+                </div>
+
+                <!-- Right Column (Two Squares) -->
+                <div class="grid grid-rows-2 gap-4 h-full">
+                    <img src="assets/courier_bike.png" alt="Courier on bike"
+                        class="w-full h-full object-cover rounded-2xl shadow-sm">
+
+                    <div
+                        class="bg-blue-600 rounded-2xl flex flex-col items-center justify-end p-6 text-white shadow-sm relative overflow-hidden">
+                        <!-- Abstract curve in blue card -->
+                        <div
+                            class="absolute inset-0 bg-blue-500 rounded-2xl w-[150%] h-[150%] -top-1/2 -left-1/4 rounded-b-[100%] z-0 mix-blend-screen opacity-20">
+                        </div>
+
+                        <div class="relative z-10 flex flex-col items-center">
+                            <div class="blue-card-icon">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                            </div>
+                            <span class="font-bold text-[15px]">Verified & Trusted</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SERVICES GRID SECTION -->
+    <section class="bg-[#0b1120] text-white py-24 relative lg:pt-48">
+        <div class="max-w-7xl mx-auto px-8 relative z-10">
+            <!-- Header -->
+            <div class="text-center space-y-4 mb-16">
+                <h2 class="text-3xl lg:text-[40px] font-extrabold tracking-tight">Everything you need, on demand</h2>
+                <p class="text-slate-400 text-[17px] max-w-2xl mx-auto leading-relaxed">
+                    Choose from our wide range of services designed to make your daily life easier and more efficient.
+                </p>
+            </div>
+
+            <!-- Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Card 1: Instant Rides -->
+                <div class="bg-[#121c32] p-8 rounded-3xl service-card-lively reveal cursor-pointer">
+                    <div class="w-12 h-12 bg-[#1b2a4a] rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="car" class="text-blue-500 w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-[22px] font-bold mb-3 text-white">Instant Rides</h3>
+                    <p class="text-slate-400 text-[15px] leading-relaxed mb-8 min-h-[66px]">
+                        Quick, safe, and reliable rides across the city at the tap of a button.
+                    </p>
+                    <a class='text-blue-500 font-bold inline-flex items-center gap-2 text-[15px] hover:text-blue-400 transition-colors'
+                        href='services.html#instant-rides'>
+                        <span>Book Now</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <!-- Card 2: Courier -->
+                <div class="bg-[#121c32] p-8 rounded-3xl service-card-lively reveal delay-100 cursor-pointer">
+                    <div class="w-12 h-12 bg-[#1b2a4a] rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="package" class="text-blue-500 w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-[22px] font-bold mb-3 text-white">Courier</h3>
+                    <p class="text-slate-400 text-[15px] leading-relaxed mb-8 min-h-[66px]">
+                        Same-day delivery for your packages, documents, and essentials.
+                    </p>
+                    <a class='text-blue-500 font-bold inline-flex items-center gap-2 text-[15px] hover:text-blue-400 transition-colors'
+                        href='services.html#courier-service'>
+                        <span>Send Package</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <!-- Card 3: Hire a Driver -->
+                <div class="bg-[#121c32] p-8 rounded-3xl service-card-lively reveal delay-200 cursor-pointer">
+                    <div class="w-12 h-12 bg-[#1b2a4a] rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="user" class="text-blue-500 w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-[22px] font-bold mb-3 text-white">Hire a Driver</h3>
+                    <p class="text-slate-400 text-[15px] leading-relaxed mb-8 min-h-[66px]">
+                        Professional, vetted drivers for your personal vehicle, hourly or daily.
+                    </p>
+                    <a class='text-blue-500 font-bold inline-flex items-center gap-2 text-[15px] hover:text-blue-400 transition-colors'
+                        href='services.html#hire-a-driver'>
+                        <span>Find Driver</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <!-- Card 4: Rent a Car -->
+                <div class="bg-[#121c32] p-8 rounded-3xl service-card-lively reveal delay-300 cursor-pointer">
+                    <div class="w-12 h-12 bg-[#1b2a4a] rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="key" class="text-blue-500 w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-[22px] font-bold mb-3 text-white">Rent a Car</h3>
+                    <p class="text-slate-400 text-[15px] leading-relaxed mb-8 min-h-[66px]">
+                        Premium vehicles for rent, from economy to luxury, fully insured.
+                    </p>
+                    <a class='text-blue-500 font-bold inline-flex items-center gap-2 text-[15px] hover:text-blue-400 transition-colors'
+                        href='services.html#rent-a-car'>
+                        <span>View Fleet</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <!-- Card 5: Book Freight -->
+                <div class="bg-[#121c32] p-8 rounded-3xl service-card-lively reveal delay-400 cursor-pointer">
+                    <div class="w-12 h-12 bg-[#1b2a4a] rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="truck" class="text-blue-500 w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-[22px] font-bold mb-3 text-white">Book Freight</h3>
+                    <p class="text-slate-400 text-[15px] leading-relaxed mb-8 min-h-[66px]">
+                        Heavy-duty transport solutions for your business logistics needs.
+                    </p>
+                    <a class='text-blue-500 font-bold inline-flex items-center gap-2 text-[15px] hover:text-blue-400 transition-colors'
+                        href='services.html#book-freight'>
+                        <span>Get Quote</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <!-- Card 6: Hire an Artisan -->
+                <div class="bg-[#121c32] p-8 rounded-3xl service-card-lively reveal delay-500 cursor-pointer">
+                    <div class="w-12 h-12 bg-[#1b2a4a] rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="hammer" class="text-blue-500 w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-[22px] font-bold mb-3 text-white">Hire an Artisan</h3>
+                    <p class="text-slate-400 text-[15px] leading-relaxed mb-8 min-h-[66px]">
+                        Verified plumbers, electricians, and mechanics at your service.
+                    </p>
+                    <a class='text-blue-500 font-bold inline-flex items-center gap-2 text-[15px] hover:text-blue-400 transition-colors'
+                        href='services.html#hire-artisan'>
+                        <span>Find Artisan</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- COMMUNITIES SECTION -->
+    <section class="bg-white py-24 relative">
+        <div class="max-w-4xl mx-auto px-8 text-center">
+            <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0f172a] mb-4">
+                Drop Cares About Your World
+            </h2>
+            <p class="text-slate-500 text-[16px] leading-relaxed mb-12 max-w-2xl mx-auto">
+                We build communities that empower every Nigerian, creating opportunities and fostering growth across
+                multiple sectors.
+            </p>
+
+            <!-- Pills Container -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12 max-w-3xl mx-auto">
+                <!-- Women -->
+                <div
+                    class="flex items-center gap-2 bg-pink-50 text-pink-600 px-5 py-2.5 rounded-full font-semibold text-[15px]">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="10" r="6"></circle>
+                        <line x1="12" y1="16" x2="12" y2="22"></line>
+                        <line x1="9" y1="19" x2="15" y2="19"></line>
+                    </svg>
+                    <span>Women</span>
+                </div>
+                <!-- Agriculture -->
+                <div
+                    class="flex items-center gap-2 bg-green-50 text-green-600 px-5 py-2.5 rounded-full font-semibold text-[15px]">
+                    <i data-lucide="leaf" class="w-4 h-4"></i>
+                    <span>Agriculture</span>
+                </div>
+                <!-- Sports -->
+                <div
+                    class="flex items-center gap-2 bg-orange-50 text-orange-600 px-5 py-2.5 rounded-full font-semibold text-[15px]">
+                    <i data-lucide="trophy" class="w-4 h-4"></i>
+                    <span>Sports</span>
+                </div>
+                <!-- Transportation -->
+                <div
+                    class="flex items-center gap-2 bg-blue-50 text-blue-600 px-5 py-2.5 rounded-full font-semibold text-[15px]">
+                    <i data-lucide="bus" class="w-4 h-4"></i>
+                    <span>Transportation</span>
+                </div>
+                <!-- Education -->
+                <div
+                    class="flex items-center gap-2 bg-purple-50 text-purple-600 px-5 py-2.5 rounded-full font-semibold text-[15px]">
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                    <span>Education</span>
+                </div>
+                <!-- Military -->
+                <div
+                    class="flex items-center gap-2 bg-red-50 text-red-500 px-5 py-2.5 rounded-full font-semibold text-[15px]">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                    <span>Military</span>
+                </div>
+                <!-- Charity -->
+                <div
+                    class="flex items-center gap-2 bg-teal-50 text-teal-600 px-5 py-2.5 rounded-full font-semibold text-[15px]">
+                    <i data-lucide="heart-handshake" class="w-4 h-4"></i>
+                    <span>Charity</span>
+                </div>
+                <!-- Technology -->
+                <div
+                    class="flex items-center gap-2 bg-indigo-50 text-indigo-600 px-5 py-2.5 rounded-full font-semibold text-[15px]">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                    <span>Technology</span>
+                </div>
+            </div>
+
+            <a class='inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-full transition-colors shadow-md shadow-blue-500/20'
+                href='communities.html'>
+                Explore Our Communities
+            </a>
+        </div>
+    </section>
+
+    <!-- HOW Drop WORKS SECTION -->
+    <section class="bg-[#080d19] text-white py-24 relative overflow-hidden border-t border-white/[0.02]">
+        <div class="max-w-6xl mx-auto px-8 relative z-10">
+            <h2 class="text-3xl lg:text-[40px] font-extrabold tracking-tight text-center mb-24">How Drop Works</h2>
+
+            <div class="relative">
+                <!-- Dotted connecting line -->
+                <div
+                    class="hidden md:block absolute top-8 left-[15%] right-[15%] h-[1px] border-t border-dashed border-blue-500/30">
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-12 relative text-center">
+
+                    <!-- Step 1 -->
+                    <div class="relative flex flex-col items-center reveal">
+                        <div
+                            class="step-circle w-16 h-16 rounded-full bg-[#080d19] border-2 border-blue-600 flex items-center justify-center text-[22px] font-bold mb-6 shadow-[0_0_30px_rgba(37,99,235,0.3)] relative z-10 cursor-pointer">
+                            1
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Download the App</h3>
+                        <p class="text-slate-400 text-[15px] leading-relaxed max-w-[280px]">
+                            Get the Drop app from your device's store and create your account in seconds.
+                        </p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="relative flex flex-col items-center reveal delay-200">
+                        <div
+                            class="step-circle w-16 h-16 rounded-full bg-[#080d19] border-2 border-blue-600 flex items-center justify-center text-[22px] font-bold mb-6 shadow-[0_0_30px_rgba(37,99,235,0.3)] relative z-10 cursor-pointer">
+                            2
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Choose Your Service</h3>
+                        <p class="text-slate-400 text-[15px] leading-relaxed max-w-[280px]">
+                            Select from rides, deliveries, or professional services based on your needs.
+                        </p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="relative flex flex-col items-center reveal delay-400">
+                        <div
+                            class="step-circle w-16 h-16 rounded-full bg-[#080d19] border-2 border-blue-600 flex items-center justify-center text-[22px] font-bold mb-6 shadow-[0_0_30px_rgba(37,99,235,0.3)] relative z-10 cursor-pointer">
+                            3
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Drop Delivers</h3>
+                        <p class="text-slate-400 text-[15px] leading-relaxed max-w-[280px]">
+                            Relax while our verified partners get the job done safely and efficiently.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRUSTED ACROSS NIGERIA SECTION -->
+    <section class="bg-[#f8fafc] py-24 relative">
+        <div class="max-w-7xl mx-auto px-8">
+            <h2 class="text-3xl lg:text-[40px] font-extrabold tracking-tight text-center text-[#0f172a] mb-16">Trusted
+                Across Nigeria</h2>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Review 1 -->
+                <div class="bg-white rounded-2xl p-8 border-t-[5px] border-blue-600 shadow-sm review-card reveal">
+                    <div class="flex gap-1 text-yellow-400 mb-6">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    </div>
+                    <p class="text-slate-600 text-[15px] italic leading-relaxed mb-8 min-h-[100px]">
+                        "The artisan service is a lifesaver. I needed a plumber urgently at 8 PM, and Drop connected me
+                        with a verified professional in minutes."
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <img src="assets/avatar_chioma.png" alt="Chioma A." class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <div class="font-bold text-[#0f172a]">Chioma A.</div>
+                            <div class="text-slate-500 text-sm">Lagos</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div
+                    class="bg-white rounded-2xl p-8 border-t-[5px] border-blue-600 shadow-sm review-card reveal delay-200">
+                    <div class="flex gap-1 text-yellow-400 mb-6">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    </div>
+                    <p class="text-slate-600 text-[15px] italic leading-relaxed mb-8 min-h-[100px]">
+                        "As a small business owner, the freight booking feature has streamlined my logistics completely.
+                        Reliable drivers and transparent pricing."
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <img src="assets/avatar_oluwaseun.png" alt="Oluwaseun B."
+                            class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <div class="font-bold text-[#0f172a]">Oluwaseun B.</div>
+                            <div class="text-slate-500 text-sm">Abuja</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div
+                    class="bg-white rounded-2xl p-8 border-t-[5px] border-blue-600 shadow-sm review-card reveal delay-400">
+                    <div class="flex gap-1 text-yellow-400 mb-6">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    </div>
+                    <p class="text-slate-600 text-[15px] italic leading-relaxed mb-8 min-h-[100px]">
+                        "The app is so easy to use. I use it for my daily commute and occasionally for sending packages
+                        to my clients. Highly recommended!"
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <img src="assets/avatar_amina.png" alt="Amina Y." class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <div class="font-bold text-[#0f172a]">Amina Y.</div>
+                            <div class="text-slate-500 text-sm">Kano</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DRIVE WITH Drop CTA SECTION -->
+    <section class="bg-[#0f172a] text-white relative overflow-hidden border-b border-blue-900/30">
+        <!-- Diagonal overlay -->
+        <div class="absolute inset-0 bg-[#0c1222] origin-top-right transform -skew-x-12 translate-x-[40%]"></div>
+
+        <div
+            class="max-w-7xl mx-auto px-8 py-24 relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+            <div class="max-w-xl">
+                <h2 class="text-4xl lg:text-[44px] font-extrabold leading-tight tracking-tight mb-4">
+                    Drive with Drop.<br>Earn More. Live Better.
+                </h2>
+                <p class="text-slate-300 text-[15px] leading-relaxed">
+                    Join thousands of Nigerians earning on their own schedule. Be your own boss, whether you're driving,
+                    delivering, or offering your professional skills.
+                </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 shrink-0">
+                <a href="careers.html"
+                    class="inline-flex items-center justify-center border-2 border-white/80 hover:border-white hover:bg-white/5 text-white font-bold py-3.5 px-8 rounded-full transition-all">
+                    Become a Driver
+                </a>
+                <a href="careers.html"
+                    class="inline-flex items-center justify-center border-2 border-white/80 hover:border-white hover:bg-white/5 text-white font-bold py-3.5 px-8 rounded-full transition-all">
+                    Become a Partner
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROBUST REVENUE MODEL SECTION -->
+    <section class="py-32 bg-[#080f1e] relative overflow-hidden">
+        <!-- Background Glows -->
+        <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-20">
+                <h2 class="text-4xl lg:text-[52px] font-extrabold text-white mb-6 tracking-tight">Robust Revenue Model
+                </h2>
+                <p class="text-slate-400 text-[18px] leading-relaxed">
+                    A diversified approach maximizing lifetime value across multiple service touchpoints.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                <!-- Card 1 -->
+                <div
+                    class="bg-white/[0.02] rounded-3xl p-8 text-center border border-white/10 hover:bg-white/[0.04] hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all duration-500 hover:-translate-y-2 group">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-500 group-hover:shadow-[0_0_20px_rgba(37,99,235,0.5)]">
+                        <i data-lucide="car"
+                            class="w-8 h-8 text-blue-400 group-hover:text-white transition-colors duration-500"></i>
+                    </div>
+                    <h4 class="font-bold text-white text-[16px] mb-3">Ride Commissions</h4>
+                    <p class="text-slate-400 text-[14px] leading-relaxed group-hover:text-slate-300 transition-colors">
+                        Percentage fee on all passenger trips</p>
+                </div>
+                <!-- Card 2 -->
+                <div
+                    class="bg-white/[0.02] rounded-3xl p-8 text-center border border-white/10 hover:bg-white/[0.04] hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all duration-500 hover:-translate-y-2 group">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-500 group-hover:shadow-[0_0_20px_rgba(37,99,235,0.5)]">
+                        <i data-lucide="truck"
+                            class="w-8 h-8 text-blue-400 group-hover:text-white transition-colors duration-500"></i>
+                    </div>
+                    <h4 class="font-bold text-white text-[16px] mb-3">Freight Margins</h4>
+                    <p class="text-slate-400 text-[14px] leading-relaxed group-hover:text-slate-300 transition-colors">
+                        Margin on B2B & B2C logistics</p>
+                </div>
+                <!-- Card 3 -->
+                <div
+                    class="bg-white/[0.02] rounded-3xl p-8 text-center border border-white/10 hover:bg-white/[0.04] hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all duration-500 hover:-translate-y-2 group">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-500 group-hover:shadow-[0_0_20px_rgba(37,99,235,0.5)]">
+                        <i data-lucide="hammer"
+                            class="w-8 h-8 text-blue-400 group-hover:text-white transition-colors duration-500"></i>
+                    </div>
+                    <h4 class="font-bold text-white text-[16px] mb-3">Artisan Fees</h4>
+                    <p class="text-slate-400 text-[14px] leading-relaxed group-hover:text-slate-300 transition-colors">
+                        Booking fees for service professionals</p>
+                </div>
+                <!-- Card 4 -->
+                <div
+                    class="bg-white/[0.02] rounded-3xl p-8 text-center border border-white/10 hover:bg-white/[0.04] hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all duration-500 hover:-translate-y-2 group">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-500 group-hover:shadow-[0_0_20px_rgba(37,99,235,0.5)]">
+                        <i data-lucide="star"
+                            class="w-8 h-8 text-blue-400 group-hover:text-white transition-colors duration-500"></i>
+                    </div>
+                    <h4 class="font-bold text-white text-[16px] mb-3">Subscriptions</h4>
+                    <p class="text-slate-400 text-[14px] leading-relaxed group-hover:text-slate-300 transition-colors">
+                        Premium community memberships</p>
+                </div>
+                <!-- Card 5 -->
+                <div
+                    class="bg-white/[0.02] rounded-3xl p-8 text-center border border-white/10 hover:bg-white/[0.04] hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all duration-500 hover:-translate-y-2 group">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-500 group-hover:shadow-[0_0_20px_rgba(37,99,235,0.5)]">
+                        <i data-lucide="handshake"
+                            class="w-8 h-8 text-blue-400 group-hover:text-white transition-colors duration-500"></i>
+                    </div>
+                    <h4 class="font-bold text-white text-[16px] mb-3">B2B Partnerships</h4>
+                    <p class="text-slate-400 text-[14px] leading-relaxed group-hover:text-slate-300 transition-colors">
+                        Corporate fleet & employee transport</p>
+                </div>
+            </div>
+
+            <div class="flex justify-center mt-20 relative z-20">
+                <div
+                    class="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)] border-8 border-[#080f1e] hover:scale-110 transition-transform duration-500 cursor-pointer">
+                    <img src="assets/droop.jpeg" alt="Drop Logo" class="w-full h-full object-cover rounded-full">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DOWNLOAD APP SECTION -->
+    <section class="bg-gradient-to-br from-blue-700 to-blue-600 text-white pt-24 overflow-hidden relative">
+        <div class="max-w-5xl mx-auto px-8 text-center relative z-10">
+            <h2 class="text-4xl lg:text-[48px] font-extrabold tracking-tight mb-8">Drop is on iOS and Android.</h2>
+
+            <div class="flex justify-center gap-4 mb-16">
+                <!-- App Store Button -->
+                <a href="https://apps.apple.com/" target="_blank"
+                    class="bg-black hover:bg-gray-900 text-white rounded-xl px-6 py-3 flex items-center gap-3 transition-colors">
+                    <i data-lucide="apple" class="w-8 h-8 fill-current"></i>
+                    <div class="text-left">
+                        <div class="text-[10px] text-gray-300">Download on the</div>
+                        <div class="text-lg font-semibold leading-none">App Store</div>
+                    </div>
+                </a>
+                <!-- Play Store Button -->
+                <a href="https://play.google.com/store" target="_blank"
+                    class="bg-black hover:bg-gray-900 text-white rounded-xl px-6 py-3 flex items-center gap-3 transition-colors">
+                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" />
+                    </svg>
+                    <div class="text-left">
+                        <div class="text-[10px] text-gray-300">GET IT ON</div>
+                        <div class="text-lg font-semibold leading-none">Google Play</div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Dual Phone Mockup Container -->
+            <div class="flex flex-col md:flex-row justify-center items-center gap-12 md:gap-10 -mb-24 mt-16 px-4 relative z-20">
+
+                <!-- Left Phone (Slide 2) -->
+                <div class="relative w-[260px] md:w-[320px] h-[540px] md:h-[680px] bg-[#1a1c1e] rounded-[40px] md:rounded-[50px] p-[8px] md:p-[10px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8),inset_0_0_10px_rgba(255,255,255,0.2)] border-2 border-slate-600 transform hover:-translate-y-4 transition-transform duration-500 flex-shrink-0"
+                    style="animation: float 6s ease-in-out infinite;">
+                    <!-- Notch -->
+                    <div
+                        class="absolute top-[8px] md:top-[10px] left-1/2 -translate-x-1/2 w-[100px] md:w-[120px] h-[25px] md:h-[30px] bg-black rounded-b-[16px] md:rounded-b-[20px] z-20 flex justify-center items-center gap-2">
+                        <div class="w-1.5 h-1.5 rounded-full bg-slate-800/80"></div>
+                        <div class="w-10 md:w-12 h-1.5 rounded-full bg-slate-800/50"></div>
+                    </div>
+                    <!-- Screen -->
+                    <div class="w-full h-full bg-black rounded-[32px] md:rounded-[40px] overflow-hidden relative">
+                        <img src="assets/app%20slide%202.jpg.jpeg" alt="Drop App UI 1"
+                            class="w-full h-full object-cover">
+                    </div>
+                    <!-- Hardware Buttons -->
+                    <div
+                        class="absolute top-[100px] md:top-[120px] -left-[12px] md:-left-[14px] w-[4px] h-[25px] md:h-[30px] bg-slate-700 rounded-l-md">
+                    </div>
+                    <div
+                        class="absolute top-[140px] md:top-[170px] -left-[12px] md:-left-[14px] w-[4px] h-[50px] md:h-[60px] bg-slate-700 rounded-l-md">
+                    </div>
+                    <div
+                        class="absolute top-[210px] md:top-[250px] -left-[12px] md:-left-[14px] w-[4px] h-[50px] md:h-[60px] bg-slate-700 rounded-l-md">
+                    </div>
+                    <div
+                        class="absolute top-[150px] md:top-[180px] -right-[12px] md:-right-[14px] w-[4px] h-[70px] md:h-[80px] bg-slate-700 rounded-r-md">
+                    </div>
+                </div>
+
+                <!-- Right Phone (Slide 3) -->
+                <div class="relative w-[260px] md:w-[320px] h-[540px] md:h-[680px] bg-[#1a1c1e] rounded-[40px] md:rounded-[50px] p-[8px] md:p-[10px] shadow-[0_40px_70px_-15px_rgba(0,0,0,0.9),inset_0_0_10px_rgba(255,255,255,0.2)] border-2 border-slate-600 transform translate-y-12 md:translate-y-16 hover:translate-y-8 md:hover:translate-y-12 transition-transform duration-500 flex-shrink-0"
+                    style="animation: float 6s ease-in-out infinite; animation-delay: -3s;">
+                    <!-- Notch -->
+                    <div
+                        class="absolute top-[8px] md:top-[10px] left-1/2 -translate-x-1/2 w-[100px] md:w-[120px] h-[25px] md:h-[30px] bg-black rounded-b-[16px] md:rounded-b-[20px] z-20 flex justify-center items-center gap-2">
+                        <div class="w-1.5 h-1.5 rounded-full bg-slate-800/80"></div>
+                        <div class="w-10 md:w-12 h-1.5 rounded-full bg-slate-800/50"></div>
+                    </div>
+                    <!-- Screen -->
+                    <div class="w-full h-full bg-black rounded-[32px] md:rounded-[40px] overflow-hidden relative">
+                        <img src="assets/App%20slide%203.jpg.jpeg" alt="Drop App UI 2"
+                            class="w-full h-full object-cover">
+                    </div>
+                    <!-- Hardware Buttons -->
+                    <div
+                        class="absolute top-[100px] md:top-[120px] -left-[12px] md:-left-[14px] w-[4px] h-[25px] md:h-[30px] bg-slate-700 rounded-l-md">
+                    </div>
+                    <div
+                        class="absolute top-[140px] md:top-[170px] -left-[12px] md:-left-[14px] w-[4px] h-[50px] md:h-[60px] bg-slate-700 rounded-l-md">
+                    </div>
+                    <div
+                        class="absolute top-[210px] md:top-[250px] -left-[12px] md:-left-[14px] w-[4px] h-[50px] md:h-[60px] bg-slate-700 rounded-l-md">
+                    </div>
+                    <div
+                        class="absolute top-[150px] md:top-[180px] -right-[12px] md:-right-[14px] w-[4px] h-[70px] md:h-[80px] bg-slate-700 rounded-r-md">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#0b1120] text-white pt-24 pb-12 relative z-20">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-16">
+
+                <!-- Logo & Info (Span 2 columns on lg) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <a href="index.html" class="inline-block hover:scale-105 transition-transform"><img src="assets/drop_logo.png" alt="Drop Logo" class="h-10 w-auto"></a>
+                    <p class="text-slate-400 text-[14px] leading-relaxed max-w-sm pr-8">
+                        Nigeria's most versatile mobility and services platform. Moving people, goods, and progress.
+                    </p>
+                </div>
+
+                <!-- Company -->
+                <div class="space-y-6">
+                    <h4 class="font-bold text-[15px]">Company</h4>
+                    <ul class="space-y-4">
+                        <li><a class='text-slate-400 hover:text-white text-[14px] transition-colors nav-link'
+                                href='about.html'>About Us</a></li>
+                        <li><a class='text-slate-400 hover:text-white text-[14px] transition-colors nav-link'
+                                href='careers.html'>Careers</a></li>
+                        <li><a class='text-slate-400 hover:text-white text-[14px] transition-colors nav-link'
+                                href='blog.html'>Blog</a></li>
+                        <li><a class='text-slate-400 hover:text-white text-[14px] transition-colors nav-link'
+                                href='investors.html'>Investor Relations</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div class="space-y-6">
+                    <h4 class="font-bold text-[15px]">Services</h4>
+                    <ul class="space-y-4">
+                        <li><a class='text-slate-400 hover:text-white text-[14px] transition-colors nav-link'
+                                href='services.html#instant-rides'>Instant Rides</a></li>
+                        <li><a class='text-slate-400 hover:text-white text-[14px] transition-colors nav-link'
+                                href='services.html#courier-service'>Courier</a></li>
+                        <li><a class='text-slate-400 hover:text-white text-[14px] transition-colors nav-link'
+                                href='services.html#hire-a-driver'>Hire a Driver</a></li>
+                        <li><a class='text-slate-400 hover:text-white text-[14px] transition-colors nav-link'
+                                href='services.html#rent-a-car'>Rent a Car</a></li>
+                        <li><a class='text-slate-400 hover:text-white text-[14px] transition-colors nav-link'
+                                href='services.html#book-freight'>Book Freight</a></li>
+                        <li><a class='text-slate-400 hover:text-white text-[14px] transition-colors nav-link'
+                                href='services.html#hire-artisan'>Hire an Artisan</a></li>
+                    </ul>
+                </div>
+
+                <!-- Communities -->
+                <div class="space-y-6">
+                    <h4 class="font-bold text-[15px]">Communities</h4>
+                    <ul class="space-y-4">
+                        <li><a href="https://whatsapp.com/channel/0029VbCc51b4IBhKy5tnIM3S" target="_blank"
+                                rel="noopener"
+                                class="text-slate-400 hover:text-green-400 text-[14px] transition-colors">Women</a></li>
+                        <li><a href="https://whatsapp.com/channel/0029VbCTgtq1t90VBbWw5c2L" target="_blank"
+                                rel="noopener"
+                                class="text-slate-400 hover:text-green-400 text-[14px] transition-colors">Agriculture</a>
+                        </li>
+                        <li><a href="https://whatsapp.com/channel/0029VbCdJPY1XqufBXDYV70L" target="_blank"
+                                rel="noopener"
+                                class="text-slate-400 hover:text-green-400 text-[14px] transition-colors">Sports</a>
+                        </li>
+                        <li><a href="https://whatsapp.com/channel/0029VbCSRlWHrDZpekCYQY0z" target="_blank"
+                                rel="noopener"
+                                class="text-slate-400 hover:text-green-400 text-[14px] transition-colors">Education</a>
+                        </li>
+                        <li><a href="https://whatsapp.com/channel/0029Vb7zeMrEwEjxaJ2zB91B" target="_blank"
+                                rel="noopener"
+                                class="text-slate-400 hover:text-green-400 text-[14px] transition-colors">Technology</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="space-y-6">
+                    <h4 class="font-bold text-[15px]">Contact</h4>
+                    <ul class="space-y-4">
+                        <li>
+                            <a href="mailto:contact@ridedrop.ng"
+                                class="text-slate-400 hover:text-white text-[14px] flex items-center gap-3 transition-colors nav-link">
+                                <i data-lucide="mail" class="w-4 h-4 shrink-0"></i>
+                                contact@ridedrop.ng
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tel:+2349127215639"
+                                class="text-slate-400 hover:text-white text-[14px] flex items-center gap-3 transition-colors nav-link">
+                                <i data-lucide="phone" class="w-4 h-4 shrink-0"></i>
+                                +2349127215639
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://maps.google.com/?q=93+CMD+ROAD+MAGODO+SHANGISHA" target="_blank"
+                                class="text-slate-400 hover:text-white text-[14px] flex items-start gap-3 transition-colors">
+                                <i data-lucide="map-pin" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                                <span>93 CMD ROAD<br>MAGODO SHANGISHA</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="flex items-center gap-4 pt-2">
+                        <a href="https://x.com" target="_blank"
+                            class="w-10 h-10 rounded-full bg-[#1e293b] flex items-center justify-center text-slate-300 hover:bg-blue-600 hover:text-white transition-all hover:scale-110 active:scale-95">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
+                            </svg>
+                        </a>
+                        <a href="https://instagram.com" target="_blank"
+                            class="w-10 h-10 rounded-full bg-[#1e293b] flex items-center justify-center text-slate-300 hover:bg-pink-600 hover:text-white transition-all hover:scale-110 active:scale-95">
+                            <svg class="w-5 h-5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank"
+                            class="w-10 h-10 rounded-full bg-[#1e293b] flex items-center justify-center text-slate-300 hover:bg-blue-700 hover:text-white transition-all hover:scale-110 active:scale-95">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Footer -->
+            <div class="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-slate-500 text-[13px]">
+                    &copy; 2026 Drop Innovations Limited. All rights reserved.
+                </div>
+                <div class="flex gap-6 text-slate-500 text-[13px]">
+                    <a href="index.html" class="hover:text-white transition-colors nav-link">Privacy Policy</a>
+                    <a href="index.html" class="hover:text-white transition-colors nav-link">Terms of Service</a>
+                </div>
+                <div class="text-slate-500 text-[13px] font-medium">
+                    Made with pride in Nigeria <span class="ml-1 text-slate-400">NG</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('flex');
+            });
+        }
+
+        // Nav shrink on scroll
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 60);
+        });
+
+        // Scroll reveal
+        const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('revealed'), i * 80);
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+        revealEls.forEach(el => revealObserver.observe(el));
+
+        // Animated stat counter
+        function animateCount(el, target, suffix) {
+            let start = 0;
+            const dur = 1800;
+            const step = timestamp => {
+                if (!start) start = timestamp;
+                const progress = Math.min((timestamp - start) / dur, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.floor(eased * target).toLocaleString() + suffix;
+                if (progress < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+        }
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const raw = el.dataset.count;
+                    const suffix = el.dataset.suffix || '';
+                    animateCount(el, parseInt(raw), suffix);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+
+        // Service pill active highlight cycling
+        const pills = document.querySelectorAll('.service-pill');
+        pills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                pills.forEach(p => p.style.cssText = '');
+            });
+        });
+    </script>
+    <!-- Global Floating Action Buttons -->
+    <div class="fixed bottom-6 left-6 z-[100] flex flex-col items-center gap-4">
+        <!-- Progress Circular Button -->
+        <button id="back-to-top" style="pointer-events: none;"
+            class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white text-blue-600 shadow-xl opacity-0 translate-y-4 transition-all duration-300 hover:scale-110 active:scale-95 group">
+            <!-- SVG Progress Circle -->
+            <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                <path class="text-gray-200" stroke-width="3" stroke="currentColor" fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path id="progress-circle" class="text-blue-600 transition-all duration-150" stroke-width="3"
+                    stroke-dasharray="0, 100" stroke-linecap="round" stroke="currentColor" fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <i data-lucide="chevron-up"
+                class="w-5 h-5 relative z-10 group-hover:-translate-y-1 transition-transform"></i>
+        </button>
+    </div>
+
+    <div class="fixed bottom-6 right-6 z-[100] flex flex-col items-center gap-4">
+        <!-- Contact Us Button -->
+        <a href="mailto:contact@ridedrop.ng"
+            class="w-12 h-12 flex items-center justify-center bg-blue-600 text-white rounded-full shadow-xl hover:bg-blue-700 hover:shadow-blue-600/30 transition-all duration-300 hover:scale-110 active:scale-95 group"
+            title="Contact Support">
+            <i data-lucide="mail" class="w-5 h-5 group-hover:animate-bounce"></i>
+        </a>
+    </div>
+
+    <script>
+        // Progress tracking and back to top
+        const backToTopBtn = document.getElementById('back-to-top');
+        const progressCircle = document.getElementById('progress-circle');
+
+        if (backToTopBtn && progressCircle) {
+            window.addEventListener('scroll', () => {
+                const scrollPos = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = docHeight > 0 ? Math.min((scrollPos / docHeight) * 100, 100) : 0;
+
+                // Update circle stroke dasharray
+                progressCircle.setAttribute('stroke-dasharray', scrollPercent + ', 100');
+
+                // Show/hide button based on scroll
+                if (scrollPos > 300) {
+                    backToTopBtn.classList.remove('opacity-0', 'translate-y-4');
+                    backToTopBtn.classList.add('opacity-100', 'translate-y-0');
+                    backToTopBtn.style.pointerEvents = 'auto';
+                } else {
+                    backToTopBtn.classList.remove('opacity-100', 'translate-y-0');
+                    backToTopBtn.classList.add('opacity-0', 'translate-y-4');
+                    backToTopBtn.style.pointerEvents = 'none';
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Re-init lucide icons for new elements
+            if (window.lucide) { window.lucide.createIcons(); }
+        }
+    </script>
+</body>
+
+</html>
+
+
