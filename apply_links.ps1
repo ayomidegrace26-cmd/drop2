@@ -7,10 +7,10 @@ foreach ($f in $files) {
     
     # 1. Change "Get the App" / "Download the App" to Play Store
     # The previous script changed '#' to '#download'.
-    $content = [regex]::Replace($content, 'href="#download"', 'href="https://play.google.com/store/apps" target="_blank"')
+    $content = [regex]::Replace($content, 'href="#download"', 'href="https://play.google.com/store/apps/details?id=com.hdprointernational.ridedrop" target="_blank" rel="noopener noreferrer"')
     # Catch any remaining '#' that say 'Download the App' or 'Get the App'
-    $content = [regex]::Replace($content, '<a href="#"([^>]+)>([^<]*)Get the App', '<a href="https://play.google.com/store/apps" target="_blank"$1>$2Get the App')
-    $content = [regex]::Replace($content, '<a href="#"([^>]+)>([^<]*)Download the App', '<a href="https://play.google.com/store/apps" target="_blank"$1>$2Download the App')
+    $content = [regex]::Replace($content, '<a href="#"([^>]+)>([^<]*)Get the App', '<a href="https://play.google.com/store/apps/details?id=com.hdprointernational.ridedrop" target="_blank" rel="noopener noreferrer"$1>$2Get the App')
+    $content = [regex]::Replace($content, '<a href="#"([^>]+)>([^<]*)Download the App', '<a href="https://play.google.com/store/apps/details?id=com.hdprointernational.ridedrop" target="_blank" rel="noopener noreferrer"$1>$2Download the App')
 
     # 2. Login button to redirect to home page
     $content = [regex]::Replace($content, 'href="#login"', 'href="home.html"')

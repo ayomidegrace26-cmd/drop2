@@ -17,11 +17,11 @@ foreach ($f in $files) {
         $content = [regex]::Replace($content, '<a href="([^"]+)" class="([^"]*?hover:text-white[^"]*?)">', '<a href="$1" class="$2 nav-link">')
         $content = [regex]::Replace($content, '<a href="index\.html" class="text-white">', '<a href="index.html" class="text-white nav-link">')
         
-        $content = [regex]::Replace($content, 'href="#download"', 'href="https://play.google.com/store/apps" target="_blank"')
-        $content = [regex]::Replace($content, '<a href="#"([^>]+)>([^<]*)Get the App', '<a href="https://play.google.com/store/apps" target="_blank"$1>$2Get the App')
-        $content = [regex]::Replace($content, '<a href="#"([^>]+)>([^<]*)Download the App', '<a href="https://play.google.com/store/apps" target="_blank"$1>$2Download the App')
+        $content = [regex]::Replace($content, 'href="#download"', 'href="https://play.google.com/store/apps/details?id=com.hdprointernational.ridedrop" target="_blank" rel="noopener noreferrer"')
+        $content = [regex]::Replace($content, '<a href="#"([^>]+)>([^<]*)Get the App', '<a href="https://play.google.com/store/apps/details?id=com.hdprointernational.ridedrop" target="_blank" rel="noopener noreferrer"$1>$2Get the App')
+        $content = [regex]::Replace($content, '<a href="#"([^>]+)>([^<]*)Download the App', '<a href="https://play.google.com/store/apps/details?id=com.hdprointernational.ridedrop" target="_blank" rel="noopener noreferrer"$1>$2Download the App')
         
-        $content = $content.Replace('href="#" class="btn-primary"', 'href="https://play.google.com/store/apps" class="btn-primary"')
+        $content = $content.Replace('href="#" class="btn-primary"', 'href="https://play.google.com/store/apps/details?id=com.hdprointernational.ridedrop" class="btn-primary"')
         $content = $content.Replace('href="#login"', 'href="index.html"')
     }
 
